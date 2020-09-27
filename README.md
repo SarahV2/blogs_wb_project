@@ -4,7 +4,7 @@ Blogs is a website that allows users to create their own personal blogs, where t
 ## Installation & Run
 * After downloading or cloning the project use the terminal and navigate to the client folder: ```cd client``` and then run the command ```npm install``` to install react project's dependencies.
 * After that's done, move back to the main folder ```cd ..``` and run the command ```npm install``` once again to install the backend's (express+nodejs) project dependencies
-* Then start the server by using the command ```npm run dev``` which should run both front and back concurrently
+* Then start the server by using the command ```npm run dev``` which should run both front and back ends concurrently
 
 ## Functionality
 The app allows the users to do the following:
