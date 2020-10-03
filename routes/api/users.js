@@ -95,7 +95,7 @@ router.post(
       if (!user) {
         return res
           .status(400)
-          .json({ errors: [{ message: 'Invalid email/password' }] });
+          .json({ errors: [{ msg: 'Invalid email/password' }] });
       }
 
       //decrypt the password in order to compare it
@@ -105,7 +105,7 @@ router.post(
       if (!isMatch) {
         return res
           .status(400)
-          .json({ errors: [{ message: 'Invalid email/password' }] });
+          .json({ errors: [{ msg: 'Invalid email/password' }] });
       }
       // return jsonwebtoken
       const payload = {

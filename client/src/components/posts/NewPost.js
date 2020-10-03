@@ -16,6 +16,8 @@ class NewPost extends Component {
       isLoading: true,
       userID: null,
       isAuthenticated: false,
+      showAlerts: false,
+      errorMessages: [],
     };
   }
 
@@ -29,6 +31,12 @@ class NewPost extends Component {
       });
     }
   }
+
+  toggleAlert = () => {
+    this.setState({
+      showAlerts: true,
+    });
+  };
   handleChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
@@ -55,12 +63,27 @@ class NewPost extends Component {
       headers: {
         'Content-Type': 'application/json',
       },
-    }).then((res) => {
-      console.log(res.data);
-      this.setState({
-        submitted: true,
+    })
+      .then((res) => {
+        console.log(res.data);
+        this.setState({
+          submitted: true,
+        });
+      })
+      .catch((error) => {
+        this.toggleAlert();
+        console.log(error.response);
+        const errors = error.response.data.errors;
+        let errorsList = [];
+        errors.map((error) => {
+          errorsList.push(error.msg);
+          console.log(error.msg);
+        });
+
+        this.setState({
+          errorMessages: errorsList,
+        });
       });
-    });
   };
 
   render() {
@@ -68,23 +91,35 @@ class NewPost extends Component {
 
     const hasProfile = JSON.parse(localStorage.getItem('hasProfile'));
 
-   // if (!this.state.isAuthenticated) {
-      if (!userID) {
-        return <Redirect to='/login' />;
-     // }
+    // if (!this.state.isAuthenticated) {
+    if (!userID) {
+      return <Redirect to='/login' />;
+      // }
     }
-    if(!hasProfile){
+    if (!hasProfile) {
       return <Redirect to='/profiles/new' />;
-
     }
     const { title, body, submitted } = this.state;
     if (submitted) {
       return <Redirect to='/home' />;
     }
+
+    const { showAlerts, errorMessages } = this.state;
+    let alerts;
+    if (errorMessages) {
+      alerts = errorMessages.map((error, index) => (
+        <Alert key={index} variant='danger'>
+          {error}
+        </Alert>
+      ));
+    }
+
     return (
       <div>
         <Form>
+         
           <h4>Add a New Entry</h4>
+          {showAlerts ? <div id='alerts-container'>{alerts}</div> : ''}
           <Form.Group>
             <Form.Label>Title</Form.Label>
             <Form.Control

@@ -3,6 +3,7 @@ const router = express.Router();
 const Post = require('../../models/Post');
 const Comment = require('../../models/Comment');
 const Profile = require('../../models/Profile');
+const { check, validationResult } = require('express-validator');
 
 const auth = require('../../middleware/auth');
 
@@ -10,28 +11,39 @@ const auth = require('../../middleware/auth');
 // @desc    Create a new post
 // @access  Private
 
-router.post('/', async (req, res) => {
-  try {
-    //const userID = req.user.id;
-    //const { title, body } = req.body;
-    const { title, body, userID } = req.body;
-    const userProfile = await Profile.findOne({ userID });
-    console.log(userProfile);
-    const { name, username } = userProfile;
-    const newPost = new Post({
-      userID,
-      title,
-      body,
-      author: name,
-      username,
-    });
-    const post = await newPost.save();
-    res.json(post);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server Error' });
+router.post(
+  '/',
+  [
+    check('title', 'Post title is required').not().isEmpty(),
+    check('body', 'Post body is required').not().isEmpty(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      //const userID = req.user.id;
+      //const { title, body } = req.body;
+      const { title, body, userID } = req.body;
+      const userProfile = await Profile.findOne({ userID });
+      console.log(userProfile);
+      const { name, username } = userProfile;
+      const newPost = new Post({
+        userID,
+        title,
+        body,
+        author: name,
+        username,
+      });
+      const post = await newPost.save();
+      res.json(post);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server Error' });
+    }
   }
-});
+);
 
 // @route   PATCH api/posts/post_id
 // @desc    Update an existing post by its author
@@ -159,7 +171,13 @@ router.patch('/:post_id/likes', async (req, res) => {
 // @desc    Get a single post's comments
 // @access  Private
 
-router.post('/:post_id/comments', async (req, res) => {
+router.post('/:post_id/comments',  [
+  check('text', 'Comment cannot be empty').not().isEmpty(),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const post = await Post.findById(req.params.post_id);
     //let userID = req.user.id;
@@ -169,7 +187,7 @@ router.post('/:post_id/comments', async (req, res) => {
     const userProfile = await Profile.findOne({ userID });
     console.log(userProfile);
     const { name, username } = userProfile;
-    console.log(username)
+    console.log(username);
     let comment = new Comment({ userID, postID, text, author: name, username });
     let newComment = await comment.save();
     post.comments.push(newComment);
@@ -185,7 +203,7 @@ router.post('/:post_id/comments', async (req, res) => {
 // @desc    Delete a comment
 // @access  Private
 
-router.delete('/:post_id/comments/:comment_id',  async (req, res) => {
+router.delete('/:post_id/comments/:comment_id', async (req, res) => {
   try {
     const post = await Post.findById(req.params.post_id);
     // check if the post exists
@@ -198,7 +216,7 @@ router.delete('/:post_id/comments/:comment_id',  async (req, res) => {
       return res.json({ error: 'the requested comment does not exist!' });
     }
 
-    const {userID}=req.body
+    const { userID } = req.body;
     // check if the user requesting the delete is either the author or the comment or the post itself
     if (!(comment.userID == userID || post.userID == userID)) {
       return res

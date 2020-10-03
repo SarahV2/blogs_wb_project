@@ -90,6 +90,7 @@ export default class CreateProfile extends Component {
               type='text'
               name='username'
               placeholder='Preffered username'
+              required
               onChange={(e) => this.handleChange(e)}
             />
           </Form.Group>
@@ -100,6 +101,7 @@ export default class CreateProfile extends Component {
               type='text'
               name='bio'
               placeholder='Tell us about yourself'
+              required
               onChange={(e) => this.handleChange(e)}
             />
           </Form.Group>

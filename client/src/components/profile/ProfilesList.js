@@ -23,7 +23,7 @@ export default class ProfilesList extends Component {
     console.log(e.target.value);
 
     this.setState({
-      searchValue: e.target.value,
+      searchValue: (e.target.value).toLowerCase(),
     });
   };
 
@@ -32,8 +32,8 @@ export default class ProfilesList extends Component {
       const { profilesList } = this.state;
       const filteredList = profilesList.filter(
         (profile) =>
-          profile.bio.includes(this.state.searchValue) ||
-          profile.username.includes(this.state.searchValue)
+          profile.bio.toLowerCase().includes(this.state.searchValue) ||
+          profile.username.toLowerCase().includes(this.state.searchValue)
       );
 
       const displayProfiles = filteredList.map((profile) => {

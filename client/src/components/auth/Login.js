@@ -45,8 +45,8 @@ export default class Login extends Component {
         const errors = error.response.data.errors;
         let errorsList = [];
         errors.map((error) => {
-          errorsList.push(error.message);
-          console.log(error.message);
+          errorsList.push(error.msg);
+          console.log(error.msg);
         });
 
         this.setState({

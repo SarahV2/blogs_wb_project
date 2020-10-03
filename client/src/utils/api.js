@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+let errors;
 export const createProfile = (username, bio, userID) => {
   axios({
     method: 'post',
@@ -15,9 +16,7 @@ export const createProfile = (username, bio, userID) => {
   }).then((res) => {
     console.log(res.data);
     localStorage.setItem('hasProfile', true);
-    window.location.href='/home'
-
-   // return;
+    window.location.href = '/home';
   });
 };
 
@@ -32,34 +31,46 @@ export const addComment = (text, postID, userID) => {
     headers: {
       'Content-Type': 'application/json',
     },
-  }).then((res) => {
-    console.log(res.data);
-    window.location.reload();
-  });
+  })
+    .then((res) => {
+      console.log(res.data);
+      window.location.reload();
+    })
+    .catch((error) => {
+      setErrors(error);
+      console.log(errors);
+    });
 };
 
+export const getErrors = () => {
+  return errors;
+};
 
-export const deleteComment=(commentID,postID,userID)=>{
-    axios({
-        method: 'delete',
-        url: `/api/posts/${postID}/comments/${commentID}`,
-        data: {
-          userID,
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((res) => {
-          console.log(res);
-           window.location.reload()
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-}
+const setErrors = (errorsList) => {
+  errors = errorsList;
+};
 
-export const getUserDetails=(username)=>{
+export const deleteComment = (commentID, postID, userID) => {
+  axios({
+    method: 'delete',
+    url: `/api/posts/${postID}/comments/${commentID}`,
+    data: {
+      userID,
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((res) => {
+      console.log(res);
+      window.location.reload();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+export const getUserDetails = (username) => {
   axios({
     method: 'get',
     url: `/api/profiles/${username}/details`,
@@ -69,11 +80,10 @@ export const getUserDetails=(username)=>{
     },
   }).then((res) => {
     console.log(res.data);
-
   });
-}
+};
 
-export const getAllProfiles=()=>{
+export const getAllProfiles = () => {
   axios({
     method: 'get',
     url: `/api/profiles/allprofiles/get`,
@@ -82,7 +92,6 @@ export const getAllProfiles=()=>{
     },
   }).then((res) => {
     console.log(res.data);
-    return res.data
-
+    return res.data;
   });
-}
+};

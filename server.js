@@ -22,3 +22,4 @@ app.use('/api/posts', require('./routes/api/posts'));
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
