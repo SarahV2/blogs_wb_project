@@ -49,7 +49,14 @@ router.post(
 // @desc    Update an existing post by its author
 // @access  Private
 
-router.patch('/:post_id', async (req, res) => {
+router.patch('/:post_id', [
+  check('title', 'Post title is required').not().isEmpty(),
+  check('body', 'Post body is required').not().isEmpty(),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const post = await Post.findById(req.params.post_id);
     //console.log('written by')

@@ -33,8 +33,12 @@ export default class CommentForm extends Component {
     e.preventDefault();
     const { text, postID } = this.state;
     const userID = JSON.parse(localStorage.getItem('currentUserID'));
+    const hasProfile=JSON.parse(localStorage.getItem('hasProfile'));
     if (!userID) {
       window.location.href = '/login';
+    }
+    if(!hasProfile){
+      window.location.href = '/profiles/new';
     }
 
     axios({

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
-import { createProfile } from '../../utils/api';
+//import { createProfile } from '../../utils/api';
+import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 export default class CreateProfile extends Component {
   constructor() {
@@ -15,6 +16,8 @@ export default class CreateProfile extends Component {
       isLoading: true,
       isAuthenticated: false,
       hasProfile: false,
+      showAlerts: false,
+      errorMessages: [],
     };
   }
 
@@ -36,15 +39,52 @@ export default class CreateProfile extends Component {
       currentUser: userID,
     });
   }
+
+  toggleAlert = () => {
+    this.setState({
+      showAlerts: true,
+    });
+  };
   handleClick = async (e) => {
     e.preventDefault();
     const { username, bio } = this.state;
     const userID = JSON.parse(localStorage.getItem('currentUserID'));
     const profile = { username, bio };
     console.log(profile);
-    await createProfile(username, bio, userID);
-    this.setState({ redirect: true });
-  };
+    //await createProfile(username, bio, userID);
+
+      axios({
+        method: 'post',
+        url: `/api/profiles/`,
+        data: {
+          username,
+          bio,
+          userID,
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then((res) => {
+        console.log(res.data);
+        localStorage.setItem('hasProfile', true);
+       // this.setState({ redirect: true });
+        window.location.href = '/home';
+      }).catch((error)=>{
+        this.toggleAlert();
+        console.log(error.response);
+        const errors = error.response.data.errors;
+        let errorsList = [];
+        errors.map((error) => {
+          errorsList.push(error.msg);
+          console.log(error.msg);
+        });
+
+        this.setState({
+          errorMessages: errorsList,
+        });
+      })
+    };
+
   handleChange = (e) => {
     console.log(e.target.value);
     this.setState({
